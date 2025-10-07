@@ -10,4 +10,5 @@ public class DatabaseNoteRepository implements NoteRepository{
         // реализация сохранения в базу данных
         System.out.println("Сохраняем заметку в базе данных: " + note.getTitle());
     }
+
 }
