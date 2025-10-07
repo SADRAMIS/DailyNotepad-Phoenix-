@@ -1,5 +1,5 @@
 package com.example.dailynotes.entity;
-
+@Entity
 public class Note {
 
     private String title;
