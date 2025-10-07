@@ -1,9 +1,14 @@
 package com.example.dailynotes.entity;
+
+import jakarta.persistence.*;
+
 @Entity
 public class Note {
 
     private String title;
     private String content;
+
+    public Note(){}
 
     public Note(String title, String content){
         this.title = title;
