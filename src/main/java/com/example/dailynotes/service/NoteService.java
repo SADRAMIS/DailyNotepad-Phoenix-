@@ -8,12 +8,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class NoteService {
 
+    @Autowired
     private NoteRepository noteRepository;
-
-    public NoteService(NoteRepository noteRepository){
-        this.noteRepository = noteRepository;
-    }
-
 
     public void createNote(String title, String content){
         Note note = new Note(title,content);
