@@ -11,8 +11,8 @@ public class NoteService {
     @Autowired
     private NoteRepository noteRepository;
 
-    public void createNote(String title, String content){
+    public Note createNote(String title, String content){
         Note note = new Note(title,content);
-        noteRepository.save(note);
+        return noteRepository.save(note);
     }
 }
