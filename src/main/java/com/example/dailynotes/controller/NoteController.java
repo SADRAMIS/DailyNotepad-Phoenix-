@@ -2,6 +2,7 @@ package com.example.dailynotes.controller;
 
 import com.example.dailynotes.entity.Note;
 import com.example.dailynotes.service.NoteService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class NoteController {
 
+    @Autowired
     private NoteService noteService;
 
     @GetMapping("/notes/new")
