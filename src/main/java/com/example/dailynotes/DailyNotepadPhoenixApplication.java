@@ -4,10 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DailynotepadPhoenixApplication {
-
+public class DailyNotepadPhoenixApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(DailynotepadPhoenixApplication.class, args);
+		SpringApplication.run(DailyNotepadPhoenixApplication.class, args);
 	}
 
 }

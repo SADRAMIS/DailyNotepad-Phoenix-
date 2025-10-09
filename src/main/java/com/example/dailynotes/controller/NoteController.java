@@ -8,17 +8,22 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class NoteController {
 
-    @Autowired
     private NoteService noteService;
+
+    @Autowired
+    public NoteController(NoteService noteService) {
+        this.noteService = noteService;
+    }
 
     @GetMapping("/notes/new")
     public String showNoteForm(Model model){
         model.addAttribute("note",new Note());
-        return "add-note";
+        return "noteForm";
     }
 
     @PostMapping("/notes")

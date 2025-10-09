@@ -2,17 +2,15 @@ package com.example.dailynotes.service;
 
 import com.example.dailynotes.entity.Note;
 import com.example.dailynotes.repository.NoteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class NoteService {
 
+    private  NoteRepository noteRepository;
 
-    private final NoteRepository noteRepository;
-
-    @Autowired
-    public NoteService(NoteRepository noteRepository){
+    public NoteService(NoteRepository noteRepository) {
         this.noteRepository = noteRepository;
     }
 
