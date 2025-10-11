@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.time.LocalDate;
+
 @Controller
 public class NoteController {
 
@@ -29,6 +31,15 @@ public class NoteController {
     public String createNote(@ModelAttribute Note note){
         noteService.createNote(note.getTitle(),note.getContent(),note.getWeight());
         return "redirect:/notes";
+    }
+    @GetMapping("/")
+    public String showNoteBook(Model model){
+        model.addAttribute("date", LocalDate.now());
+        model.addAttribute("note",new Note());
+        model.addAttribute("todayNotes",noteService.findNotesByDate(currentDate));
+        model.addAttribute("weight",75.0);
+
+        return "notebook";
     }
 
 }
