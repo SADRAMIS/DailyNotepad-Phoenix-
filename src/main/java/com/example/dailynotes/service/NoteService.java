@@ -14,8 +14,8 @@ public class NoteService {
         this.noteRepository = noteRepository;
     }
 
-    public Note createNote(String title, String content){
-        Note note = new Note(title,content);
+    public Note createNote(String title, String content,double weight){
+        Note note = new Note(title,content,weight);
         return noteRepository.save(note);
     }
 }

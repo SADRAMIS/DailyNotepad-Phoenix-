@@ -2,6 +2,8 @@ package com.example.dailynotes.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name="notes")
 public class Note {
@@ -12,12 +14,31 @@ public class Note {
 
     private String title;
     private String content;
+    private LocalDate date;
+    private double weight;
 
     public Note(){}
 
-    public Note(String title, String content){
+    public Note(String title, String content,double weight){
         this.title = title;
         this.content = content;
+        this.date = LocalDate.now();
+        this.weight = weight;
+    }
+
+    public Note(String title, String content,LocalDate date,double weight){
+        this.title = title;
+        this.content = content;
+        this.date = date;
+        this.weight = weight;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
     }
 
     public Long getId() {
@@ -26,6 +47,14 @@ public class Note {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public String getTitle() {

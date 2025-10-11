@@ -21,7 +21,7 @@ public class NoteRepositoryTest {
     @Test
     public void whenFindById_thenReturnNote(){
 
-        Note note = new Note("Тест", "Содержание тестовой заметки");
+        Note note = new Note("Тест", "Содержание тестовой заметки",10.0);
         entityManager.persist(note);
         entityManager.flush();
 
