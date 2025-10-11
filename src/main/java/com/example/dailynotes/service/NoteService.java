@@ -4,6 +4,9 @@ import com.example.dailynotes.entity.Note;
 import com.example.dailynotes.repository.NoteRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
+
 
 @Service
 public class NoteService {
@@ -17,5 +20,9 @@ public class NoteService {
     public Note createNote(String title, String content,double weight){
         Note note = new Note(title,content,weight);
         return noteRepository.save(note);
+    }
+
+    public List<Note> findNotesByDate(LocalDate date){
+        return noteRepository.findByDate(date);
     }
 }
