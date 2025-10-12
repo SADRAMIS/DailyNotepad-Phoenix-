@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 
@@ -32,14 +33,17 @@ public class NoteController {
         noteService.createNote(note.getTitle(),note.getContent(),note.getWeight());
         return "redirect:/notes";
     }
+
     @GetMapping("/")
-    public String showNoteBook(Model model){
-        model.addAttribute("date", LocalDate.now());
+    public String showNoteBook(@RequestParam(required = false) String date, Model model){
+        LocalDate currentDate = (date != null)
+                ? LocalDate.parse(date)
+                : LocalDate.now();
+
+        model.addAttribute("date", currentDate);
         model.addAttribute("note",new Note());
         model.addAttribute("todayNotes",noteService.findNotesByDate(LocalDate.now()));
         model.addAttribute("weight",75.0);
-
-        return "notebook";
     }
 
 }
