@@ -44,6 +44,8 @@ public class NoteController {
         model.addAttribute("note",new Note());
         model.addAttribute("todayNotes",noteService.findNotesByDate(LocalDate.now()));
         model.addAttribute("weight",75.0);
+
+        return "notebook";
     }
 
 }

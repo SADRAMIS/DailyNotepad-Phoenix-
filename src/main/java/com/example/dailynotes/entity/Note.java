@@ -16,6 +16,9 @@ public class Note {
     private String content;
     private LocalDate date;
     private double weight;
+    private boolean completed;
+
+
 
     public Note(){}
 

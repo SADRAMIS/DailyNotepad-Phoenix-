@@ -25,4 +25,10 @@ public class NoteService {
     public List<Note> findNotesByDate(LocalDate date){
         return noteRepository.findByDate(date);
     }
+
+    public void toggleNoteCompletion(Long id){
+        Note note = noteRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Note not found"));
+        //note.setCompleted
+    }
 }
