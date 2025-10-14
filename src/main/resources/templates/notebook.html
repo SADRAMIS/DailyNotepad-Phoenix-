@@ -62,11 +62,11 @@
 
     <!-- Навигация между днями -->
     <div class="navigation-buttons">
-        <a th:href="@{/(date=${#temporals.format(#temporals.createYesterday(date), 'yyyy-MM-dd')})}"
+        <a th:href="@{/(date=${#temporals.format(date.minusDays(1), 'yyyy-MM-dd')})}"
            class="btn btn-outline-primary">← Предыдущий день</a>
-        <a th:href="@{/(date=${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')})}"
+        <a th:href="@{/}"
            class="btn btn-outline-secondary">Сегодня</a>
-        <a th:href="@{/(date=${#temporals.format(#temporals.createTomorrow(date), 'yyyy-MM-dd')})}"
+        <a th:href="@{/(date=${#temporals.format(date.plusDays(1), 'yyyy-MM-dd')})}"
            class="btn btn-outline-primary">Следующий день →</a>
     </div>
 
