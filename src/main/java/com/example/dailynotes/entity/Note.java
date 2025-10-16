@@ -75,4 +75,12 @@ public class Note {
     public void setContent(String content) {
         this.content = content;
     }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
 }
