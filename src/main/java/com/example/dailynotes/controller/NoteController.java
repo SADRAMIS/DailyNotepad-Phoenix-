@@ -30,7 +30,7 @@ public class NoteController {
 
     @PostMapping("/notes")
     public String createNote(@ModelAttribute Note note){
-        noteService.createNote(note.getTitle(),note.getContent(),note.getWeight());
+        noteService.createNote(note.getTitle(),note.getContent(),note.getWeight(),note.getDate());
         return "redirect:/notes";
     }
 

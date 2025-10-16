@@ -18,7 +18,7 @@ public class NoteService {
     }
 
     public Note createNote(String title, String content,double weight, LocalDate date){
-        Note note = new Note(title,content,weight,date);
+        Note note = new Note(title,content,date,weight);
         return noteRepository.save(note);
     }
 
