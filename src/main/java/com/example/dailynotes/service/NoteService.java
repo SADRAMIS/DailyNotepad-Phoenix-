@@ -29,6 +29,7 @@ public class NoteService {
     public void toggleNoteCompletion(Long id){
         Note note = noteRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("Note not found"));
-        //note.setCompleted
+        note.setCompleted(!note.isCompleted());
+        noteRepository.save(note);
     }
 }
