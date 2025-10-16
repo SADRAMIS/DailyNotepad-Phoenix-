@@ -34,6 +34,7 @@ public class Note {
         this.content = content;
         this.date = date;
         this.weight = weight;
+        this.completed = false;
     }
 
     public double getWeight() {
