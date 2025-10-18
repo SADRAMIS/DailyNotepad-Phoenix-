@@ -24,14 +24,18 @@ public class NoteService {
         return noteRepository.save(note);
     }
 
+    @Transactional(readOnly = true)
     public List<Note> findNotesByDate(LocalDate date){
         return noteRepository.findByDate(date);
     }
 
+    @Transactional
     public void toggleNoteCompletion(Long id){
         Note note = noteRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("Note not found"));
         note.setCompleted(!note.isCompleted());
         noteRepository.save(note);
     }
+
+
 }
