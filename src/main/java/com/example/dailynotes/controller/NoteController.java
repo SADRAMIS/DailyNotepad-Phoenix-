@@ -57,4 +57,11 @@ public class NoteController {
         return "redirect/";
     }
 
+    @GetMapping("/notes/{id}/edit")
+    public String showEditForm(@PathVariable Long id, Model model){
+        //Note note = noteService.findNoteById(id);
+        model.addAttribute("note",note);
+        return "editForm";
+    }
+
 }
