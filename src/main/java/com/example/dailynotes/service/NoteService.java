@@ -3,6 +3,7 @@ package com.example.dailynotes.service;
 import com.example.dailynotes.entity.Note;
 import com.example.dailynotes.repository.NoteRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,12 +12,13 @@ import java.util.List;
 @Service
 public class NoteService {
 
-    private  NoteRepository noteRepository;
+    private final NoteRepository noteRepository;
 
     public NoteService(NoteRepository noteRepository) {
         this.noteRepository = noteRepository;
     }
 
+    @Transactional
     public Note createNote(String title, String content,double weight, LocalDate date){
         Note note = new Note(title,content,date,weight);
         return noteRepository.save(note);
