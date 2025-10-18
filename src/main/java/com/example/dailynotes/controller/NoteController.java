@@ -51,4 +51,10 @@ public class NoteController {
         return "redirect:/";
     }
 
+    @PostMapping("/notes/{id}/delete")
+    public String deleteNote(@PathVariable Long id){
+        noteService.deleteNote(id);
+        return "redirect/";
+    }
+
 }
