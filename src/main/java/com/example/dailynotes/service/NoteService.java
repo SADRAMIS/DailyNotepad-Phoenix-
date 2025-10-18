@@ -37,5 +37,9 @@ public class NoteService {
         noteRepository.save(note);
     }
 
+    @Transactional
+    public void deleteNote(Long id){
+        noteRepository.deleteById(id);
+    }
 
 }
