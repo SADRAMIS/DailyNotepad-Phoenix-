@@ -59,14 +59,14 @@ public class NoteController {
 
     @GetMapping("/notes/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model){
-//        Note note = noteService.findNoteById(id);
-//        model.addAttribute("note",note);
+        Note note = noteService.findNoteById(id);
+        model.addAttribute("note",note);
         return "editForm";
     }
 
     @PostMapping("/notes/{id}/update")
     public String updateNote(@PathVariable Long id, Model model){
-//        noteService.updateNote(id,note);
+        noteService.updateNote(id,note);
         return "redirect:/";
     }
 

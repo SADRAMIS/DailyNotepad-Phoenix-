@@ -29,6 +29,25 @@ public class NoteService {
         return noteRepository.findByDate(date);
     }
 
+    @Transactional(readOnly = true)
+    public Note findNoteById(Long id){
+        return noteRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Заметка с ID " + id + " не найдена"));
+    }
+
+    @Transactional
+    public Note updateNote(Long id, Note updatedNote){
+        Note existingNote = noteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Заметка с ID " + id + " не найдена"));
+
+        existingNote.setTitle(updatedNote.getTitle());
+        existingNote.setContent(updatedNote.getContent());
+        existingNote.setWeight(updatedNote.getWeight());
+        existingNote.setDate(updatedNote.getDate());
+
+        return noteRepository.save(existingNote);
+    }
+
     @Transactional
     public void toggleNoteCompletion(Long id){
         Note note = noteRepository.findById(id)
