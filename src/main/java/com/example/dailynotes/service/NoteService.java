@@ -51,14 +51,16 @@ public class NoteService {
     @Transactional
     public void toggleNoteCompletion(Long id){
         Note note = noteRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Note not found"));
+                .orElseThrow(()-> new RuntimeException("Заметка с ID " + id + " не найдена"));
         note.setCompleted(!note.isCompleted());
         noteRepository.save(note);
     }
 
     @Transactional
     public void deleteNote(Long id){
+        if(!noteRepository.existsById(id)){
+            throw new RuntimeException("Заметка с ID " + id + " не найдена");
+        }
         noteRepository.deleteById(id);
     }
-
 }
