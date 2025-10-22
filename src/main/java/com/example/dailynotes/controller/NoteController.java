@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Controller
 public class NoteController {
 
-    private NoteService noteService;
+    private final NoteService noteService;
 
     @Autowired
     public NoteController(NoteService noteService) {
@@ -27,8 +27,12 @@ public class NoteController {
 
     @PostMapping("/notes")
     public String createNote(@ModelAttribute Note note){
-        noteService.createNote(note.getTitle(),note.getContent(),note.getWeight(),note.getDate());
-        return "redirect:/notes";
+        noteService.createNote(
+                note.getTitle(),
+                note.getContent(),
+                note.getWeight(),
+                note.getDate());
+        return "redirect:/";
     }
 
     @GetMapping("/")
@@ -39,7 +43,7 @@ public class NoteController {
 
         model.addAttribute("date", currentDate);
         model.addAttribute("note",new Note());
-        model.addAttribute("todayNotes",noteService.findNotesByDate(LocalDate.now()));
+        model.addAttribute("todayNotes",noteService.findNotesByDate(currentDate));
         model.addAttribute("weight",75.0);
 
         return "notebook";
@@ -54,7 +58,7 @@ public class NoteController {
     @PostMapping("/notes/{id}/delete")
     public String deleteNote(@PathVariable Long id){
         noteService.deleteNote(id);
-        return "redirect/";
+        return "redirect:/";
     }
 
     @GetMapping("/notes/{id}/edit")
@@ -65,9 +69,10 @@ public class NoteController {
     }
 
     @PostMapping("/notes/{id}/update")
-    public String updateNote(@PathVariable Long id, Model model){
+    public String updateNote(
+            @PathVariable Long id,
+            @ModelAttribute Note note){
         noteService.updateNote(id,note);
         return "redirect:/";
     }
-
 }
