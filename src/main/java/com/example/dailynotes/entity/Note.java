@@ -37,6 +37,9 @@ public class Note {
         this.completed = false;
     }
 
+    @OneToMany(mappedBy = "note",cascade = CascadeType.ALL)
+    private List<DayTask> dayTasks;
+
     public double getWeight() {
         return weight;
     }
