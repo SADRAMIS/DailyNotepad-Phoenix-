@@ -17,7 +17,7 @@ public class MonthlyTask {
     private MonthlyPlan monthlyPlan;
 
     //храним статусы завершения для каждого дня месяца
-    @ElementCollection
+    @ElementCollection //позволяет хранить много значений,а не одно поле
     private Map<Integer,Boolean> statusPerDay;
 
 }
