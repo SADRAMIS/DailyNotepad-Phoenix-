@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MonthlyPlanService {
@@ -56,5 +57,16 @@ public class MonthlyPlanService {
     @Transactional(readOnly = true)
     public List<MonthlyTask> getMonthlyTasks(Long planId){
         return monthlyTaskRepository.findByMonthlyPlanId(planId);
+    }
+
+    // Изменить статус задачи на день
+    @Transactional(readOnly = true)
+    public void updateTaskDayStatus(Long monthlyTaskId,Integer day,Boolean status){
+        MonthlyTask monthlyTask = monthlyTaskRepository.findById(monthlyTaskId).
+                orElseThrow(()->new RuntimeException("Задача месяца не найдена"));
+        Map<Integer,Boolean> map = monthlyTask.getStatusPerDay();
+        map.put(day,status);
+        monthlyTask.setStatusPerDay(map);
+        monthlyTaskRepository.save(monthlyTask);
     }
 }
