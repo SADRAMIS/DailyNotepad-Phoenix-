@@ -45,4 +45,10 @@ public class MonthlyPlanService {
         plan.setTasks(monthlyTaskRepository.findByMonthlyPlanId(plan.getId()));
         return monthlyPlanRepository.save(plan);
     }
+
+    // Получить план на месяц
+    @Transactional
+    public List<MonthlyPlan> getMonthlyPlans(int year, int month){
+        return monthlyPlanRepository.findByYearAndMonth(year, month);
+    }
 }
