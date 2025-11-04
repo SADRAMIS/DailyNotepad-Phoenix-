@@ -63,6 +63,4 @@ public class WeeklyPlanService {
         weeklyTask.setStatusPerDay(map);
         weeklyTaskRepository.save(weeklyTask);
     }
-
-
 }
