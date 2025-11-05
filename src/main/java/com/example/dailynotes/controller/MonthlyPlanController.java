@@ -36,4 +36,11 @@ public class MonthlyPlanController {
         model.addAttribute("days", IntStream.rangeClosed(1,daysInMonth).boxed().toList());
         return "monthlyPlan";
     }
+
+    // Форма создания нового плана с выбором задач
+    @GetMapping
+    public String newPlanForm(Model model){
+        model.addAttribute("allTasks",taskService.getAllTasks());
+        return "newMonthlyPlanForm";
+    }
 }
