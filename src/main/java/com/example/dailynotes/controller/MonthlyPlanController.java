@@ -7,6 +7,7 @@ import com.example.dailynotes.service.TaskTemplateService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -42,5 +43,12 @@ public class MonthlyPlanController {
     public String newPlanForm(Model model){
         model.addAttribute("allTasks",taskService.getAllTasks());
         return "newMonthlyPlanForm";
+    }
+
+    // Создать план с выбранными задачами
+    @PostMapping
+    public String createMonthlyPlan(@RequestParam int year, @RequestParam int month, @RequestParam List<Long> taskIds){
+        monthlyPlanService.createMonthlyPlan(year, month, taskIds);
+        return "redirect:/plans/month?year=" + year + "&month=" + month;
     }
 }
