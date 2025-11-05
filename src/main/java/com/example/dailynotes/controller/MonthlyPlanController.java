@@ -1,6 +1,7 @@
 package com.example.dailynotes.controller;
 
 import com.example.dailynotes.entity.MonthlyPlan;
+import com.example.dailynotes.entity.Task;
 import com.example.dailynotes.service.MonthlyPlanService;
 import com.example.dailynotes.service.TaskService;
 import com.example.dailynotes.service.TaskTemplateService;
@@ -49,6 +50,20 @@ public class MonthlyPlanController {
     @PostMapping
     public String createMonthlyPlan(@RequestParam int year, @RequestParam int month, @RequestParam List<Long> taskIds){
         monthlyPlanService.createMonthlyPlan(year, month, taskIds);
+        return "redirect:/plans/month?year=" + year + "&month=" + month;
+    }
+
+    // Автозаполнение через AI/шаблон
+    @PostMapping("/autofill")
+    public String autofillMonthlyTasks(@RequestParam int year, @RequestParam int month, @RequestParam(required = false) String prompt){
+        List<Task> tasks;
+        if(prompt != null && !prompt.isBlank()){
+            tasks = taskTemplateService.generateAiMonthlyTasks(prompt);
+        }else{
+            tasks = taskTemplateService.generateDefaultMonthlyTasks();
+        }
+        List<Long> taskIds = tasks.stream().map(Task::getId).toList();
+        monthlyPlanService.createMonthlyPlan(year,month,taskIds);
         return "redirect:/plans/month?year=" + year + "&month=" + month;
     }
 }
