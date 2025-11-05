@@ -66,4 +66,11 @@ public class MonthlyPlanController {
         monthlyPlanService.createMonthlyPlan(year,month,taskIds);
         return "redirect:/plans/month?year=" + year + "&month=" + month;
     }
+
+    // Отметить выполненность задачи на день
+    @PostMapping("/task-status")
+    public String updateMonthlyTaskStatus(@RequestParam Long monthlyTaskId,@RequestParam Integer dayNumber,@RequestParam Boolean status,@RequestParam int year,@RequestParam int month){
+        monthlyPlanService.updateTaskDayStatus(monthlyTaskId,dayNumber,status);
+        return "redirect:/plans/month?year=" + year + "&month=" + month;
+    }
 }
