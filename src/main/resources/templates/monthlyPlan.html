@@ -1,6 +1,8 @@
+<html xmlns:th="http://www.thymeleaf.org">
 <table class="table">
     <thead>
     <tr>
+        <meta charset="UTF-8">
         <th>Задача</th>
         <th th:each="d : ${days}">[[${d}]]</th>
     </tr>
