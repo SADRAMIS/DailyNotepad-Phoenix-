@@ -31,10 +31,10 @@ public class MonthlyPlanController {
 
     // Просмотр плана месяца
     @GetMapping
-    public String showMonthlyPlan(@RequestParam int year, @RequestParam int month, Model model){
-        List<MonthlyPlan> plans = monthlyPlanService.getMonthlyPlans(year,month);
+    public String showMonthlyPlan(@RequestParam int planYear, @RequestParam int planMonth, Model model){
+        List<MonthlyPlan> plans = monthlyPlanService.getMonthlyPlans(planYear,planMonth);
         model.addAttribute("plans",plans);
-        int daysInMonth = LocalDate.of(year,month,1).lengthOfMonth();
+        int daysInMonth = LocalDate.of(planYear,planMonth,1).lengthOfMonth();
         model.addAttribute("days", IntStream.rangeClosed(1,daysInMonth).boxed().toList());
         return "monthlyPlan";
     }
@@ -48,14 +48,14 @@ public class MonthlyPlanController {
 
     // Создать план с выбранными задачами
     @PostMapping
-    public String createMonthlyPlan(@RequestParam int year, @RequestParam int month, @RequestParam List<Long> taskIds){
-        monthlyPlanService.createMonthlyPlan(year, month, taskIds);
-        return "redirect:/plans/month?year=" + year + "&month=" + month;
+    public String createMonthlyPlan(@RequestParam int planYear, @RequestParam int planMonth, @RequestParam List<Long> taskIds){
+        monthlyPlanService.createMonthlyPlan(planYear, planMonth, taskIds);
+        return "redirect:/plans/planMonth?planYear=" + planYear + "&planMonth=" + planMonth;
     }
 
     // Автозаполнение через AI/шаблон
     @PostMapping("/autofill")
-    public String autofillMonthlyTasks(@RequestParam int year, @RequestParam int month, @RequestParam(required = false) String prompt){
+    public String autofillMonthlyTasks(@RequestParam int planYear, @RequestParam int planMonth, @RequestParam(required = false) String prompt){
         List<Task> tasks;
         if(prompt != null && !prompt.isBlank()){
             tasks = taskTemplateService.generateAiMonthlyTasks(prompt);
@@ -63,14 +63,14 @@ public class MonthlyPlanController {
             tasks = taskTemplateService.generateDefaultMonthlyTasks();
         }
         List<Long> taskIds = tasks.stream().map(Task::getId).toList();
-        monthlyPlanService.createMonthlyPlan(year,month,taskIds);
-        return "redirect:/plans/month?year=" + year + "&month=" + month;
+        monthlyPlanService.createMonthlyPlan(planYear,planMonth,taskIds);
+        return "redirect:/plans/planMonth?planYear=" + planYear + "&planMonth=" + planMonth;
     }
 
     // Отметить выполненность задачи на день
     @PostMapping("/task-status")
-    public String updateMonthlyTaskStatus(@RequestParam Long monthlyTaskId,@RequestParam Integer dayNumber,@RequestParam Boolean status,@RequestParam int year,@RequestParam int month){
+    public String updateMonthlyTaskStatus(@RequestParam Long monthlyTaskId,@RequestParam Integer dayNumber,@RequestParam Boolean status,@RequestParam int planYear,@RequestParam int planMonth){
         monthlyPlanService.updateTaskDayStatus(monthlyTaskId,dayNumber,status);
-        return "redirect:/plans/month?year=" + year + "&month=" + month;
+        return "redirect:/plans/planMonth?planYear=" + planYear + "&planMonth=" + planMonth;
     }
 }
