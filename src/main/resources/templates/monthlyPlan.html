@@ -1,0 +1,26 @@
+<table class="table">
+    <thead>
+    <tr>
+        <th>Задача</th>
+        <th th:each="d : ${days}">[[${d}]]</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="mt : ${plans[0].tasks}">
+        <td>[[${mt.task.title}]]</td>
+        <td th:each="d : ${days}">
+            <form th:action="@{/plans/month/task-status}" method="post" style="display:inline;">
+                <input type="hidden" name="monthlyTaskId" th:value="${mt.id}" />
+                <input type="hidden" name="dayNumber" th:value="${d}" />
+                <input type="hidden" name="status" th:value="${!mt.statusPerDay[d]}" />
+                <input type="hidden" name="year" th:value="${plans[0].year}" />
+                <input type="hidden" name="month" th:value="${plans[0].month}" />
+                <button type="submit"
+                        th:classappend="${mt.statusPerDay[d]} ? 'btn-success' : 'btn-outline-secondary'"
+                        class="btn btn-sm">[[${mt.statusPerDay[d]} ? '+' : '-']]
+                </button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
