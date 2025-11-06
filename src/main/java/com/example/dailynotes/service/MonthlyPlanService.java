@@ -50,7 +50,7 @@ public class MonthlyPlanService {
     // Получить план на месяц
     @Transactional(readOnly = true)
     public List<MonthlyPlan> getMonthlyPlans(int planYear, int planMonth){
-        return monthlyPlanRepository.findByYearAndMonth(planYear, planMonth);
+        return monthlyPlanRepository.findByPlanYearAndPlanMonth(planYear, planMonth);
     }
 
     // Получить задачи плана

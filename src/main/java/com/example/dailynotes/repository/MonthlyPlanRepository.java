@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface MonthlyPlanRepository extends JpaRepository<MonthlyPlan,Long> {
-    List<MonthlyPlan> findByYearAndMonth(int planYear,int planMonth);
+    List<MonthlyPlan> findByPlanYearAndPlanMonth(int planYear,int planMonth);
 }
