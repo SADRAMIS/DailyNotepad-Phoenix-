@@ -40,7 +40,7 @@ public class MonthlyPlanController {
     }
 
     // Форма создания нового плана с выбором задач
-    @GetMapping
+    @GetMapping("/new")
     public String newPlanForm(Model model){
         model.addAttribute("allTasks",taskService.getAllTasks());
         return "newMonthlyPlanForm";
