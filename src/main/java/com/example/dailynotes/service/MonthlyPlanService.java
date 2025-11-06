@@ -29,8 +29,8 @@ public class MonthlyPlanService {
     @Transactional
     public MonthlyPlan createMonthlyPlan(int year, int month, List<Long> taskIds){
         MonthlyPlan plan = new MonthlyPlan();
-        plan.setYear(year);
-        plan.setMonth(month);
+        plan.setPlanYear(year);
+        plan.setPlanMonth(month);
         monthlyPlanRepository.save(plan);
         // Добавляем задачи
         for(Long id : taskIds){

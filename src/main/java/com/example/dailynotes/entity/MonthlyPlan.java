@@ -10,18 +10,18 @@ public class MonthlyPlan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int month; //1-12
-    private int year;
+    private int planMonth; //1-12
+    private int planYear;
 
     @OneToMany(mappedBy = "monthlyPlan", cascade = CascadeType.ALL)
     private List<MonthlyTask> tasks;
 
-    public int getYear() {
-        return year;
+    public int getPlanYear() {
+        return planYear;
     }
 
-    public void setYear(int year) {
-        this.year = year;
+    public void setPlanYear(int planYear) {
+        this.planYear = planYear;
     }
 
     public Long getId() {
@@ -40,11 +40,11 @@ public class MonthlyPlan {
         this.tasks = tasks;
     }
 
-    public int getMonth() {
-        return month;
+    public int getPlanMonth() {
+        return planMonth;
     }
 
-    public void setMonth(int month) {
-        this.month = month;
+    public void setPlanMonth(int planMonth) {
+        this.planMonth = planMonth;
     }
 }
