@@ -27,10 +27,10 @@ public class MonthlyPlanService {
 
     // Создать план на месяц с выбранными задачами
     @Transactional
-    public MonthlyPlan createMonthlyPlan(int year, int month, List<Long> taskIds){
+    public MonthlyPlan createMonthlyPlan(int planYear, int planMonth, List<Long> taskIds){
         MonthlyPlan plan = new MonthlyPlan();
-        plan.setPlanYear(year);
-        plan.setPlanMonth(month);
+        plan.setPlanYear(planYear);
+        plan.setPlanMonth(planMonth);
         monthlyPlanRepository.save(plan);
         // Добавляем задачи
         for(Long id : taskIds){
@@ -49,8 +49,8 @@ public class MonthlyPlanService {
 
     // Получить план на месяц
     @Transactional(readOnly = true)
-    public List<MonthlyPlan> getMonthlyPlans(int year, int month){
-        return monthlyPlanRepository.findByYearAndMonth(year, month);
+    public List<MonthlyPlan> getMonthlyPlans(int planYear, int planMonth){
+        return monthlyPlanRepository.findByYearAndMonth(planYear, planMonth);
     }
 
     // Получить задачи плана
