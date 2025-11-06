@@ -15,8 +15,8 @@
                 <input type="hidden" name="monthlyTaskId" th:value="${mt.id}" />
                 <input type="hidden" name="dayNumber" th:value="${d}" />
                 <input type="hidden" name="status" th:value="${!mt.statusPerDay[d]}" />
-                <input type="hidden" name="year" th:value="${plans[0].year}" />
-                <input type="hidden" name="month" th:value="${plans[0].month}" />
+                <input type="hidden" name="planYear" th:value="${plans[0].planYear}" />
+                <input type="hidden" name="planMonth" th:value="${plans[0].planMonth}" />
                 <button type="submit"
                         th:classappend="${mt.statusPerDay[d]} ? 'btn-success' : 'btn-outline-secondary'"
                         class="btn btn-sm">[[${mt.statusPerDay[d]} ? '+' : '-']]
