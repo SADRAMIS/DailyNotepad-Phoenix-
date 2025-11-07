@@ -50,7 +50,7 @@ public class MonthlyPlanController {
     @PostMapping
     public String createMonthlyPlan(@RequestParam int planYear, @RequestParam int planMonth, @RequestParam List<Long> taskIds){
         monthlyPlanService.createMonthlyPlan(planYear, planMonth, taskIds);
-        return "redirect:/plans/planMonth?planYear=" + planYear + "&planMonth=" + planMonth;
+        return "redirect:/plans/month?planYear=" + planYear + "&planMonth=" + planMonth;
     }
 
     // Автозаполнение через AI/шаблон
@@ -64,13 +64,13 @@ public class MonthlyPlanController {
         }
         List<Long> taskIds = tasks.stream().map(Task::getId).toList();
         monthlyPlanService.createMonthlyPlan(planYear,planMonth,taskIds);
-        return "redirect:/plans/planMonth?planYear=" + planYear + "&planMonth=" + planMonth;
+        return "redirect:/plans/month?planYear=" + planYear + "&planMonth=" + planMonth;
     }
 
     // Отметить выполненность задачи на день
     @PostMapping("/task-status")
     public String updateMonthlyTaskStatus(@RequestParam Long monthlyTaskId,@RequestParam Integer dayNumber,@RequestParam Boolean status,@RequestParam int planYear,@RequestParam int planMonth){
         monthlyPlanService.updateTaskDayStatus(monthlyTaskId,dayNumber,status);
-        return "redirect:/plans/planMonth?planYear=" + planYear + "&planMonth=" + planMonth;
+        return "redirect:/plans/month?planYear=" + planYear + "&planMonth=" + planMonth;
     }
 }
