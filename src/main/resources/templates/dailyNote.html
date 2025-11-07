@@ -1,0 +1,17 @@
+<form th:action="@{/note/day/update}" th:object="${note}" method="post" xmlns:th="http://www.thymeleaf.org">
+    <div>
+        <meta charset="UTF-8">
+        <h4>Вес: <input type="number" th:field="*{weight}" step="0.1" style="width:80px;"/> кг</h4>
+    </div>
+    <ul class="list-group mb-3">
+        <li th:each="dt, dtStat : ${note.dayTasks}" class="list-group-item">
+            <input type="checkbox" th:field="*{dayTasks[__${dtStat.index}__].completed}" />
+            <span th:text="${dt.title}"></span>
+        </li>
+    </ul>
+    <div class="mb-3">
+        <label>Быстрые заметки</label>
+        <textarea class="form-control" th:field="*{content}" rows="2"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Сохранить задачи дня</button>
+</form>
