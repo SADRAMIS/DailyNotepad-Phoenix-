@@ -26,9 +26,9 @@ public class WeeklyPlanService {
     }
 
     @Transactional
-    public WeeklyPlan createWeeklyPlan(int year, int weekNumber, List<Long> taskIds){
+    public WeeklyPlan createWeeklyPlan(int weekYear, int weekNumber, List<Long> taskIds){
         WeeklyPlan weeklyPlan = new WeeklyPlan();
-        weeklyPlan.setPlanYear(year);
+        weeklyPlan.setWeekYear(weekYear);
         weeklyPlan.setWeekNumber(weekNumber);
         weeklyPlanRepository.save(weeklyPlan);
 
@@ -46,8 +46,8 @@ public class WeeklyPlanService {
         return weeklyPlanRepository.save(weeklyPlan);
     }
     @Transactional(readOnly = true)
-    public List<WeeklyPlan> getWeekPlans(int year,int week){
-        return weeklyPlanRepository.findByYearAndWeekNumber(year, week);
+    public List<WeeklyPlan> getWeekPlans(int weekYear,int weekNumber){
+        return weeklyPlanRepository.findByYearAndWeekNumber(weekYear, weekNumber);
     }
 
     @Transactional(readOnly = true)

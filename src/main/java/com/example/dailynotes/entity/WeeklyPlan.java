@@ -11,7 +11,7 @@ public class WeeklyPlan {
     private Long id;
 
     private int weekNumber;
-    private int planYear;
+    private int weekYear;
     @OneToMany(mappedBy = "weeklyPlan",cascade = CascadeType.ALL)
     private List<WeeklyTask> tasks;
 
@@ -31,12 +31,12 @@ public class WeeklyPlan {
         this.weekNumber = weekNumber;
     }
 
-    public int getPlanYear() {
-        return planYear;
+    public int getWeekYear() {
+        return weekYear;
     }
 
-    public void setPlanYear(int planYear) {
-        this.planYear = planYear;
+    public void setWeekYear(int weekYear) {
+        this.weekYear = weekYear;
     }
 
     public List<WeeklyTask> getTasks() {
