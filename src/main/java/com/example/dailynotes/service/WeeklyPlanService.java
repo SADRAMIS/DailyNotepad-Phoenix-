@@ -28,7 +28,7 @@ public class WeeklyPlanService {
     @Transactional
     public WeeklyPlan createWeeklyPlan(int year, int weekNumber, List<Long> taskIds){
         WeeklyPlan weeklyPlan = new WeeklyPlan();
-        weeklyPlan.setYear(year);
+        weeklyPlan.setPlanYear(year);
         weeklyPlan.setWeekNumber(weekNumber);
         weeklyPlanRepository.save(weeklyPlan);
 
