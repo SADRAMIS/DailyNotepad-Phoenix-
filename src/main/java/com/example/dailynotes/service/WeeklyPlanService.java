@@ -47,7 +47,7 @@ public class WeeklyPlanService {
     }
     @Transactional(readOnly = true)
     public List<WeeklyPlan> getWeekPlans(int weekYear,int weekNumber){
-        return weeklyPlanRepository.findByYearAndWeekNumber(weekYear, weekNumber);
+        return weeklyPlanRepository.findByWeekYearAndWeekNumber(weekYear, weekNumber);
     }
 
     @Transactional(readOnly = true)
