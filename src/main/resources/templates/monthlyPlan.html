@@ -11,7 +11,7 @@
     <tr th:if="${plans.empty}">
         <td colspan="999">Нет плана на этот месяц. <a href="/plans/month/new">Создайте</a> новый план!</td>
     </tr>
-    <tr th:each="mt : ${plans[0].tasks}">
+    <tr th:if="${!plans.empty}" th:each="mt : ${plans[0].tasks}">
         <td>[[${mt.task.title}]]</td>
         <td th:each="d : ${days}">
             <form th:action="@{/plans/month/task-status}" method="post" style="display:inline;">
