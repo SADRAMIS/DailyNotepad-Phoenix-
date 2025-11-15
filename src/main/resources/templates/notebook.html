@@ -70,6 +70,16 @@
            class="btn btn-outline-primary">Следующий день →</a>
     </div>
 
+    <!-- Отображение сообщений об успехе/ошибке -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${success}">Успех</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${error}">Ошибка</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
     <!-- Список существующих заметок -->
     <div class="notes-list">
         <h3>Заметки на день:</h3>
@@ -89,6 +99,7 @@
                     </small>
                 </div>
                 <div class="btn-group">
+                    <a th:href="@{/notes/{id}/edit(id=${note.id})}" class="btn btn-sm btn-info">✏️ Редактировать</a>
                     <form th:action="@{/notes/{id}/toggle(id=${note.id})}" method="post" style="display: inline;">
                         <button type="submit" class="btn btn-sm"
                                 th:classappend="${note.completed} ? 'btn-warning' : 'btn-success'">

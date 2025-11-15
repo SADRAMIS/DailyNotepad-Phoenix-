@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактировать заметку - Блокнот-Феникс</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <div class="form-container">
+        <div class="form-header">
+            <h2>✏️ Редактировать заметку</h2>
+            <p class="text-muted">Измените данные заметки и сохраните изменения</p>
+        </div>
+
+        <!-- Отображение сообщений об ошибках (если есть) -->
+        <div th:if="${error}" class="alert alert-danger" role="alert">
+            <span th:text="${error}">Ошибка</span>
+        </div>
+
+        <form th:action="@{/notes/{id}/update(id=${note.id})}" th:object="${note}" method="post">
+            <!-- Скрытое поле для ID -->
+            <input type="hidden" th:field="*{id}">
+
+            <div class="mb-3">
+                <label for="title" class="form-label">Заголовок:</label>
+                <input type="text" class="form-control" id="title" th:field="*{title}"
+                       placeholder="Введите заголовок заметки" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="content" class="form-label">Содержание:</label>
+                <textarea class="form-control" id="content" th:field="*{content}"
+                          rows="6" placeholder="Введите содержание заметки" required></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="weight" class="form-label">Вес (кг):</label>
+                <input type="number" step="0.1" class="form-control" id="weight"
+                       th:field="*{weight}" placeholder="75.0">
+                <div class="form-text">Необязательное поле</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="date" class="form-label">Дата:</label>
+                <input type="date" class="form-control" id="date" th:field="*{date}" required>
+            </div>
+
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="completed" th:field="*{completed}">
+                    <label class="form-check-label" for="completed">
+                        Заметка выполнена
+                    </label>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a th:href="@{/}" class="btn btn-secondary me-md-2">Отмена</a>
+                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
