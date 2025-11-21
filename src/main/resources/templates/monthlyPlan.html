@@ -1,31 +1,311 @@
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<table class="table">
-    <thead>
-    <tr>
-        <meta charset="UTF-8">
-        <th>Задача</th>
-        <th th:each="d : ${days}">[[${d}]]</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:if="${plans.empty}">
-        <td colspan="999">Нет плана на этот месяц. <a href="/plans/month/new">Создайте</a> новый план!</td>
-    </tr>
-    <tr th:if="${!plans.empty}" th:each="mt : ${plans[0].tasks}">
-        <td>[[${mt.task.title}]]</td>
-        <td th:each="d : ${days}">
-            <form th:action="@{/plans/month/task-status}" method="post" style="display:inline;">
-                <input type="hidden" name="monthlyTaskId" th:value="${mt.id}" />
-                <input type="hidden" name="dayNumber" th:value="${d}" />
-                <input type="hidden" name="status" th:value="${!mt.statusPerDay[d]}" />
-                <input type="hidden" name="planYear" th:value="${plans[0].planYear}" />
-                <input type="hidden" name="planMonth" th:value="${plans[0].planMonth}" />
-                <button type="submit"
-                        th:classappend="${mt.statusPerDay[d]} ? 'btn-success' : 'btn-outline-secondary'"
-                        class="btn btn-sm">[[${mt.statusPerDay[d]} ? '+' : '-']]
-                </button>
+<head>
+    <meta charset="UTF-8">
+    <title>Месячный план</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+            --bg:#f9fafc;
+            --card:#ffffff;
+            --border:#dfe3ea;
+            --accent:#4e73df;
+            --accent-dark:#2e59d9;
+            --danger:#e74a3b;
+            --success:#1cc88a;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: #1f2a37;
+        }
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px 48px;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 24px;
+        }
+        .layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+        .panel {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+        }
+        .panel h2 {
+            margin-top: 0;
+            font-size: 18px;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #475467;
+        }
+        input[type="number"],
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            font-size: 14px;
+            box-sizing: border-box;
+            margin-bottom: 12px;
+        }
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all .2s ease;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--accent-dark);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+        .alerts {
+            margin-top: 16px;
+        }
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .alert-success { background: rgba(28,200,138,0.1); color: var(--success); }
+        .alert-error { background: rgba(231,74,59,0.12); color: var(--danger); }
+        .alert-info { background: rgba(78,115,223,0.12); color: var(--accent-dark); }
+        .tasks-list {
+            max-height: 200px;
+            overflow: auto;
+            padding: 8px 0;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .tasks-list label {
+            font-weight: normal;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            margin: 0;
+        }
+        .tasks-list label:nth-child(odd) {
+            background: rgba(15,23,42,0.02);
+        }
+        .plan-card {
+            margin-top: 24px;
+            background: var(--card);
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08);
+        }
+        .plan-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .plan-header h3 {
+            margin: 0;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 6px;
+            text-align: center;
+            font-size: 12px;
+        }
+        th {
+            background: rgba(15,23,42,0.02);
+            font-weight: 600;
+        }
+        td:first-child,
+        th:first-child {
+            position: sticky;
+            left: 0;
+            background: #fff;
+            min-width: 180px;
+            text-align: left;
+        }
+        .task-meta {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        .day-form {
+            margin: 0;
+        }
+        .day-btn {
+            width: 42px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            font-weight: 600;
+            cursor: pointer;
+            background: #fff;
+            color: #6b7280;
+        }
+        .day-btn.pending:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .day-btn.done {
+            background: var(--success);
+            color: #fff;
+            border-color: var(--success);
+        }
+        .empty-state {
+            margin-top: 32px;
+            text-align: center;
+            padding: 24px;
+            border-radius: 16px;
+            border: 2px dashed var(--border);
+            color: #475467;
+        }
+        @media (max-width: 768px) {
+            th:first-child,
+            td:first-child {
+                min-width: 140px;
+            }
+            .plan-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <h1>План на месяц</h1>
+
+    <div class="layout">
+        <div class="panel">
+            <h2>Выбор периода</h2>
+            <form th:action="@{/plans/month}" method="get">
+                <label for="planYear">Год</label>
+                <input type="number" min="2000" max="2100" id="planYear" name="planYear" th:value="${planYear}">
+                <label for="planMonth">Месяц</label>
+                <input type="number" min="1" max="12" id="planMonth" name="planMonth" th:value="${planMonth}">
+                <button class="btn btn-primary" type="submit">Показать</button>
             </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+        </div>
+
+        <div class="panel">
+            <h2>Создать план</h2>
+            <div th:if="${!hasAvailableTasks}">
+                <p>Сохранённых задач пока нет. Мы автоматически создадим базовый список, если вы отправите форму.</p>
+            </div>
+            <form th:if="${hasAvailableTasks}"
+                  th:action="@{/plans/month}" method="post">
+                <input type="hidden" name="planYear" th:value="${planYear}">
+                <input type="hidden" name="planMonth" th:value="${planMonth}">
+                <label>Задачи</label>
+                <div class="tasks-list">
+                    <label th:each="task : ${allTasks}">
+                        <input type="checkbox" name="taskIds" th:value="${task.id}">
+                        <span th:text="${task.title}"></span>
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top:12px;">Создать план</button>
+            </form>
+            <form th:action="@{/plans/month/autofill}" method="post" style="margin-top:12px;">
+                <input type="hidden" name="planYear" th:value="${planYear}">
+                <input type="hidden" name="planMonth" th:value="${planMonth}">
+                <label for="prompt">Автозаполнение (опционально)</label>
+                <textarea id="prompt" name="prompt" rows="3" placeholder="Например: 'спорт и саморазвитие'"></textarea>
+                <button class="btn btn-outline" type="submit">Сгенерировать с AI/шаблона</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="alerts">
+        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+        <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+        <div class="alert alert-info" th:if="${info}" th:text="${info}"></div>
+    </div>
+
+    <div class="empty-state" th:if="${plans == null or #lists.isEmpty(plans)}">
+        Для выбранного месяца ещё нет плана. Создайте его вручную или используйте автозаполнение.
+    </div>
+
+    <div th:each="plan : ${plans}">
+        <div class="plan-card">
+            <div class="plan-header">
+                <h3 th:text="'План #' + ${plan.id}"></h3>
+                <div>
+                    <strong th:text="${plan.planMonth} + '/' + ${plan.planYear}"></strong>
+                </div>
+            </div>
+            <div class="table-wrapper" th:if="${plan.tasks != null and !plan.tasks.isEmpty()}">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Задача</th>
+                        <th th:each="day : ${days}" th:text="${day}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="task : ${plan.tasks}">
+                        <td>
+                            <div th:text="${task.task.title}"></div>
+                            <div class="task-meta" th:text="${task.task.category}"></div>
+                        </td>
+                        <td th:each="day : ${days}"
+                            th:with="dayCompleted=${task.statusPerDay != null and #maps.containsKey(task.statusPerDay, day)} ? task.statusPerDay[day] : false">
+                            <form class="day-form" th:action="@{/plans/month/task-status}" method="post">
+                                <input type="hidden" name="monthlyTaskId" th:value="${task.id}">
+                                <input type="hidden" name="dayNumber" th:value="${day}">
+                                <input type="hidden" name="status" th:value="${dayCompleted ? false : true}">
+                                <input type="hidden" name="planYear" th:value="${plan.planYear}">
+                                <input type="hidden" name="planMonth" th:value="${plan.planMonth}">
+                                <button type="submit"
+                                        th:text="${dayCompleted ? '✓' : day}"
+                                        th:class="'day-btn ' + (dayCompleted ? 'done' : 'pending')"></button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="empty-state" th:if="${plan.tasks == null or plan.tasks.isEmpty()}">
+                В этом плане пока нет задач.
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

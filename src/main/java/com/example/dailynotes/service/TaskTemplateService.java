@@ -48,32 +48,13 @@ public class TaskTemplateService {
     @Transactional
     public List<Task> generateDefaultMonthlyTasks(){
         logger.info("Генерация задач по умолчанию");
-        List<Task> list = new ArrayList<>();
-        
-        Task task1 = new Task();
-        task1.setTitle("Изучать Java каждый день");
-        task1.setCategory("Шаблон");
-        list.add(task1);
-
-        Task task2 = new Task();
-        task2.setTitle("Зарядка утром");
-        task2.setCategory("Шаблон");
-        list.add(task2);
-
-        Task task3 = new Task();
-        task3.setTitle("Читать техническую статью");
-        task3.setCategory("Шаблон");
-        list.add(task3);
-
-        // Сохраняем все задачи в БД, чтобы получить их ID
         List<Task> savedTasks = new ArrayList<>();
-        for (Task task : list) {
-            Task saved = taskRepository.save(task);
-            savedTasks.add(saved);
-            logger.debug("Сохранена задача: ID={}, title={}", saved.getId(), saved.getTitle());
-        }
-        
-        logger.info("Создано {} задач по умолчанию", savedTasks.size());
+
+        savedTasks.add(ensureTemplateTaskExists("Изучать Java каждый день", "Шаблон"));
+        savedTasks.add(ensureTemplateTaskExists("Зарядка утром", "Шаблон"));
+        savedTasks.add(ensureTemplateTaskExists("Читать техническую статью", "Шаблон"));
+
+        logger.info("Доступно {} задач по умолчанию", savedTasks.size());
         return savedTasks;
     }
 
@@ -139,5 +120,17 @@ public class TaskTemplateService {
             }
             return generateDefaultMonthlyTasks();
         }
+    }
+
+    private Task ensureTemplateTaskExists(String title, String category) {
+        return taskRepository.findByTitleIgnoreCaseAndCategoryIgnoreCase(title, category)
+                .orElseGet(() -> {
+                    Task templateTask = new Task();
+                    templateTask.setTitle(title);
+                    templateTask.setCategory(category);
+                    Task saved = taskRepository.save(templateTask);
+                    logger.debug("Создан шаблон задачи: ID={}, title={}", saved.getId(), saved.getTitle());
+                    return saved;
+                });
     }
 }

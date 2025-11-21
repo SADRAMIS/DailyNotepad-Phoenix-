@@ -30,10 +30,18 @@ public class TaskService {
     }
 
     // Получить шаблонные задачи для автозаполнения
-  public List<Task> getTemplateTasksForMonth(){
+    public List<Task> getTemplateTasksForMonth(){
         return taskRepository.findAll()
-                .stream().filter(t->t.getCategory().equals("Шаблон") || t.getCategory().contains("..."))
-                        .toList();
+                .stream()
+                .filter(task -> {
+                    String category = task.getCategory();
+                    if (category == null) {
+                        return false;
+                    }
+                    String normalized = category.trim().toLowerCase();
+                    return normalized.equals("шаблон") || normalized.contains("template");
+                })
+                .toList();
     }
 
     // Вернуть список id для автозаполнения

@@ -35,40 +35,62 @@ public class MonthlyPlanController {
 
     // Просмотр плана месяца
     @GetMapping
-    public String showMonthlyPlan(@RequestParam int planYear, @RequestParam int planMonth, Model model){
-        // Валидация параметров
-        if (planMonth < 1 || planMonth > 12) {
+    public String showMonthlyPlan(@RequestParam(required = false) Integer planYear,
+                                  @RequestParam(required = false) Integer planMonth,
+                                  Model model){
+        LocalDate today = LocalDate.now();
+        int resolvedYear = planYear != null ? planYear : today.getYear();
+        int resolvedMonth = planMonth != null ? planMonth : today.getMonthValue();
+
+        if (resolvedMonth < 1 || resolvedMonth > 12) {
             model.addAttribute("error", "Месяц должен быть от 1 до 12");
-            return "error";
+            resolvedMonth = today.getMonthValue();
         }
+
+        model.addAttribute("planYear", resolvedYear);
+        model.addAttribute("planMonth", resolvedMonth);
+
+        List<Task> allTasks = taskService.getAllTasks();
+        model.addAttribute("allTasks", allTasks);
+        model.addAttribute("hasAvailableTasks", !allTasks.isEmpty());
+
         try {
-            List<MonthlyPlan> plans = monthlyPlanService.getMonthlyPlans(planYear,planMonth);
+            List<MonthlyPlan> plans = monthlyPlanService.getMonthlyPlans(resolvedYear,resolvedMonth);
             model.addAttribute("plans",plans);
-            int daysInMonth = LocalDate.of(planYear,planMonth,1).lengthOfMonth();
+            int daysInMonth = LocalDate.of(resolvedYear,resolvedMonth,1).lengthOfMonth();
             model.addAttribute("days", IntStream.rangeClosed(1,daysInMonth).boxed().toList());
-            model.addAttribute("planYear", planYear);
-            model.addAttribute("planMonth", planMonth);
         } catch (Exception e) {
-            logger.error("Ошибка при получении месячного плана: год={}, месяц={}", planYear, planMonth, e);
+            logger.error("Ошибка при получении месячного плана: год={}, месяц={}", resolvedYear, resolvedMonth, e);
             model.addAttribute("error", "Ошибка при загрузке плана: " + e.getMessage());
-            return "error";
+            model.addAttribute("plans", List.of());
+            model.addAttribute("days", List.of());
         }
         return "monthlyPlan";
     }
 
     // Форма создания нового плана с выбором задач
     @GetMapping("/new")
-    public String newPlanForm(Model model){
-        model.addAttribute("allTasks",taskService.getAllTasks());
-        return "newMonthlyPlanForm";
+    public String newPlanForm(){
+        LocalDate today = LocalDate.now();
+        return "redirect:/plans/month?planYear=" + today.getYear() + "&planMonth=" + today.getMonthValue();
     }
 
     // Создать план с выбранными задачами
     @PostMapping
-    public String createMonthlyPlan(@RequestParam int planYear, @RequestParam int planMonth, 
+    public String createMonthlyPlan(@RequestParam int planYear, @RequestParam int planMonth,
                                      @RequestParam(required = false) List<Long> taskIds,
                                      RedirectAttributes redirectAttributes){
         try {
+            if (taskIds == null || taskIds.isEmpty()) {
+                if (!taskService.getAllTasks().isEmpty()) {
+                    redirectAttributes.addFlashAttribute("error", "Выберите хотя бы одну задачу для плана");
+                    return "redirect:/plans/month?planYear=" + planYear + "&planMonth=" + planMonth;
+                }
+                List<Task> generated = taskTemplateService.generateDefaultMonthlyTasks();
+                taskIds = generated.stream().map(Task::getId).toList();
+                redirectAttributes.addFlashAttribute("info", "Список задач был создан автоматически");
+            }
+
             monthlyPlanService.createMonthlyPlan(planYear, planMonth, taskIds);
             redirectAttributes.addFlashAttribute("success", "Месячный план успешно создан");
         } catch (Exception e) {
