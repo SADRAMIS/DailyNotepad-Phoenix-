@@ -1,6 +1,7 @@
 package com.example.dailynotes.service;
 
 import com.example.dailynotes.entity.Note;
+import com.example.dailynotes.event.NoteEvent;
 import com.example.dailynotes.exception.EntityNotFoundException;
 import com.example.dailynotes.repository.NoteRepository;
 import org.slf4j.Logger;
@@ -17,17 +18,41 @@ public class NoteService {
 
     private static final Logger logger = LoggerFactory.getLogger(NoteService.class);
     private final NoteRepository noteRepository;
+    private final KafkaProducerService kafkaProducerService;
 
-    public NoteService(NoteRepository noteRepository) {
+    /**
+     * Конструктор с внедрением зависимостей
+     * 
+     * @param noteRepository репозиторий для работы с базой данных
+     * @param kafkaProducerService сервис для отправки событий в Kafka
+     */
+    public NoteService(NoteRepository noteRepository, KafkaProducerService kafkaProducerService) {
         this.noteRepository = noteRepository;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
+    /**
+     * Создание новой заметки
+     * После сохранения в БД отправляет событие CREATED в Kafka
+     */
     @Transactional
     public Note createNote(String title, String content,double weight, LocalDate date){
         logger.debug("Создание заметки: title={}, date={}", title, date);
         Note note = new Note(title,content,date,weight);
         Note saved = noteRepository.save(note);
         logger.info("Заметка создана с ID: {}", saved.getId());
+        
+        // Отправка события о создании заметки в Kafka
+        // Это происходит асинхронно и не блокирует выполнение метода
+        try {
+            NoteEvent event = new NoteEvent(NoteEvent.EventType.CREATED, saved);
+            kafkaProducerService.sendNoteCreatedEvent(event);
+        } catch (Exception e) {
+            // Логируем ошибку, но не прерываем выполнение
+            // Заметка уже сохранена в БД, событие можно отправить позже
+            logger.error("Ошибка при отправке события о создании заметки в Kafka", e);
+        }
+        
         return saved;
     }
 
@@ -43,6 +68,10 @@ public class NoteService {
                 .orElseThrow(() -> new EntityNotFoundException("Заметка", id));
     }
 
+    /**
+     * Обновление существующей заметки
+     * После сохранения в БД отправляет событие UPDATED в Kafka
+     */
     @Transactional
     public Note updateNote(Long id, Note updatedNote){
         logger.debug("Обновление заметки с ID: {}", id);
@@ -56,25 +85,59 @@ public class NoteService {
 
         Note saved = noteRepository.save(existingNote);
         logger.info("Заметка с ID {} обновлена", id);
+        
+        // Отправка события об обновлении заметки в Kafka
+        try {
+            NoteEvent event = new NoteEvent(NoteEvent.EventType.UPDATED, saved);
+            kafkaProducerService.sendNoteUpdatedEvent(event);
+        } catch (Exception e) {
+            logger.error("Ошибка при отправке события об обновлении заметки в Kafka", e);
+        }
+        
         return saved;
     }
 
+    /**
+     * Изменение статуса выполнения заметки
+     * После сохранения в БД отправляет событие TOGGLED в Kafka
+     */
     @Transactional
     public void toggleNoteCompletion(Long id){
         logger.debug("Переключение статуса заметки с ID: {}", id);
         Note note = noteRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Заметка", id));
         note.setCompleted(!note.isCompleted());
-        noteRepository.save(note);
-        logger.info("Статус заметки с ID {} изменен на: {}", id, note.isCompleted());
+        Note saved = noteRepository.save(note);
+        logger.info("Статус заметки с ID {} изменен на: {}", id, saved.isCompleted());
+        
+        // Отправка события об изменении статуса заметки в Kafka
+        try {
+            NoteEvent event = new NoteEvent(NoteEvent.EventType.TOGGLED, saved);
+            kafkaProducerService.sendNoteToggledEvent(event);
+        } catch (Exception e) {
+            logger.error("Ошибка при отправке события об изменении статуса заметки в Kafka", e);
+        }
     }
 
+    /**
+     * Удаление заметки
+     * ВАЖНО: Событие отправляется ДО удаления, так как после удаления объект Note недоступен
+     */
     @Transactional
     public void deleteNote(Long id){
         logger.debug("Удаление заметки с ID: {}", id);
-        if(!noteRepository.existsById(id)){
-            throw new EntityNotFoundException("Заметка", id);
+        Note note = noteRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Заметка", id));
+        
+        // Отправка события об удалении заметки в Kafka
+        // Делаем это ДО удаления, чтобы иметь доступ к данным заметки
+        try {
+            NoteEvent event = new NoteEvent(NoteEvent.EventType.DELETED, note);
+            kafkaProducerService.sendNoteDeletedEvent(event);
+        } catch (Exception e) {
+            logger.error("Ошибка при отправке события об удалении заметки в Kafka", e);
         }
+        
         noteRepository.deleteById(id);
         logger.info("Заметка с ID {} удалена", id);
     }
